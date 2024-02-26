@@ -20,7 +20,6 @@ app.post('/envelopes', (req, res, next) => {
     } else {
       res.status(404).send('Invalid data');
     }
-    
 })
 
 app.get('/envelopes', (req, res, next) => {
@@ -28,8 +27,44 @@ app.get('/envelopes', (req, res, next) => {
 })
 
 app.get('/envelopes/:category', (req, res, next) => {
-  const envelopeId = req.params.category;
+  const category = req.params.category;
   res.send(userBudgetManager.envelope(category))
+})
+
+app.put('/envelopes/add', (req, res, next) => {
+  const envelope = req.body;
+  console.log(envelope)
+  const added = userBudgetManager.addEnvelope(envelope);
+
+  if (added){
+    res.status(200).send('Envelope added.')
+  } else {
+    res.status(404).send('Envelope was not added.')
+  }
+})
+
+app.put('/envelopes/editAmount/:category', (req, res, next) => {
+  const category = req.params.category;
+  const amount = req.body.amount;
+  const changed = userBudgetManager.editAmountByCategory(category,amount);
+
+  if (changed){
+    res.status(200).send('Envelope edited.')
+  } else {
+    res.status(404).send('Envelope not edited.')
+  }
+})
+
+app.put('/envelopes/editCategory/:envelopeId', (req, res, next) => {
+  const envelopeId = req.params.envelopeId;
+  const category = req.body.category;
+  const changed = userBudgetManager.editCategoryById(envelopeId,category);
+  console.log(envelopeId + ' | ' + category + ' | ' + changed)
+  if (changed){
+    res.status(200).send('Envelope category changed.')
+  } else {
+    res.status(404).send('Envelope category was not changed.')
+  }
 })
 
 app.put('/envelopes/deplete/:category', (req, res, next) => {
@@ -76,6 +111,12 @@ app.listen(port, () => {
 
 
 /* stuff needed
-  add more envelopes.
-  update an envelopes amount.
+  add more envelopes
+  ==================
+  - adding function --- done
+  - verrify data total amount of the envelopes don't exceed the totalBudget --- busy
+
+
+  update an envelopes amount
+  ==========================
 */

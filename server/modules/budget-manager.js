@@ -12,6 +12,12 @@ class budgetManager{
         return this._envelopes.find(envelope => envelope.category === category) || {};
     }
 
+    addEnvelope(envelope){
+        envelope.id = randId();
+        this._envelopes.push(envelope);
+        return true
+    }
+
     generateEnvelopeIds(envelopes){
         envelopes.forEach(envelope => {
             envelope.id = randId();
@@ -100,7 +106,6 @@ class budgetManager{
     }
 
     addAmountByCategory(category, amount){
-
         for (const envelope of this._envelopes) {
             if (envelope[category]) {
                 envelope.amount += amount;
@@ -110,14 +115,35 @@ class budgetManager{
     }
 
     removeAmountByCategory(category, amount){
-
         let AmountLeft;
         for (const envelope of this._envelopes) {
             AmountLeft = this.currentAmountByCategory(category) - amount;
             if (envelope[category] && AmountLeft >= 0) {
                 envelope.amount -= amount;
+                return true
             }
         }
+        return false
+    }
+
+    editAmountByCategory(category, amount){
+        for (const envelope of this._envelopes) {
+            if (envelope.category === category) {
+                envelope.amount = amount;
+                return true
+            }
+        }
+        return false
+    }
+
+    editCategoryById(id, category){
+        for (const envelope of this._envelopes) {
+            if (envelope.id === id) {
+                envelope.category = category;
+                return true
+            }
+        }
+        return false
     }
 }  
 
