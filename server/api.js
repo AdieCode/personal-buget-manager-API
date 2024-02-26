@@ -18,7 +18,7 @@ app.post('/envelopes', (req, res, next) => {
       userBudgetManager = new budgetManager(totalBudget, envelopes)
       res.status(200).send('Data recieved and stored')
     } else {
-      res.status(400).send('Invalid data');
+      res.status(404).send('Invalid data');
     }
     
 })
@@ -27,21 +27,44 @@ app.get('/envelopes', (req, res, next) => {
   res.send(userBudgetManager.envelopes)
 })
 
-app.get('/envelopes/:envelopeId', (req, res, next) => {
-  const envelopeId = req.params.envelopeId;
-  res.send(userBudgetManager.envelope(envelopeId))
+app.get('/envelopes/:category', (req, res, next) => {
+  const envelopeId = req.params.category;
+  res.send(userBudgetManager.envelope(category))
 })
 
-app.put('/envelopes/:envelopeId', (req, res, next) => {
-  const envelopeId = req.params.envelopeId;
+app.put('/envelopes/deplete/:category', (req, res, next) => {
+  const category = req.params.category;
   const Amount = req.body.amount;
-  console.log(typeof Amount)
-  const depletionSucces = userBudgetManager.depleteBudget(envelopeId, Amount)
+  const depletionSuccess = userBudgetManager.depleteBudget(category, Amount)
 
-  if (depletionSucces){
+  if (depletionSuccess){
     res.status(200).send('Envelope buget update succeeded.')
   } else {
-    res.status(400).send('Envelope buget update vailed.')
+    res.status(404).send('Envelope buget update vailed.')
+  }
+})
+
+app.put('/envelopes/transfer/:from/:to', (req, res, next) => {
+  const from = req.params.from;
+  const to = req.params.to;
+  const amount = req.body.amount;
+  const transferSuccessful = userBudgetManager.transfer(from, to, amount)
+
+  if (transferSuccessful){
+    res.status(200).send('Transfer successful.');
+  } else {
+    res.status(404).send('Transfer unsuccessful.')
+  }
+})
+
+app.delete('/envelopes/:category', (req, res, next) => {
+  const category = req.params.category;
+  const deleteSuccessful = userBudgetManager.deleteEnvelope(category) || false;
+  
+  if (deleteSuccessful){
+    res.status(200).send('Delete successful.');
+  } else {
+    res.status(404).send('Delete unsuccessful.');
   }
 })
 
@@ -50,3 +73,9 @@ const port = process.env.PORT || 3000; // Use environment port or 3000 if not av
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
+
+
+/* stuff needed
+  add more envelopes.
+  update an envelopes amount.
+*/

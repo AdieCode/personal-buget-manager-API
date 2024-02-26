@@ -1,15 +1,15 @@
 class budgetManager{
     constructor(totalBudget, envelopes){
         this._totalBudget = totalBudget // should be a float type.
-        this._envelopes = this.generateEnvelopeIds(envelopes)     // should be an array type.
+        this._envelopes = this.generateEnvelopeIds(envelopes) || []    // should be an array type.
     }
 
     get envelopes(){
         return this._envelopes;
     }
 
-    envelope(id){
-        return this._envelopes.find(envelope => envelope.id === id) || {};
+    envelope(category){
+        return this._envelopes.find(envelope => envelope.category === category) || {};
     }
 
     generateEnvelopeIds(envelopes){
@@ -20,16 +20,54 @@ class budgetManager{
         return envelopes;
     }
 
-    transfer(){
-        return null
+    transfer(from, to, amount){
+        const fromAmount = this.currentAmountByCategory(from)
+        const toAmount = this.currentAmountByCategory(to)
+        const fromAmountLeft = fromAmount - amount;
+
+        if (fromAmount && toAmount){
+            if (fromAmountLeft > 0){
+                this.removeAmountByCategory(from, amount);
+                this.addAmountByCategory(to, amount)
+                console.log('Amount transfer succesful.');
+                return true
+            } else {
+                console.log("Amount to transfer exceeds available balance.");
+                return false
+            }
+
+        } else {
+            console.log("One of the category's were not found.");
+            return false
+        }
+    }
+
+    deleteEnvelope(category){
+        let deleteSuccess = false;
+
+        this._envelopes = this._envelopes.filter(envelope => {
+            if(envelope.category === category){
+                deleteSuccess = true;
+            }
+
+            return envelope.category !== category;
+        })
+
+        if(deleteSuccess){
+            console.log('Delete successful.')
+            return true
+        } else {
+            console.log('Delete unsuccessful.')
+            return false
+        }
     }
 
     //function will return a boolean to verify if the buget depletion was succesful
-    depleteBudget(id, Amount){
+    depleteBudget(category, Amount){
         let AmountLeft;
         for (const envelope of this._envelopes) {
-            AmountLeft = this.currentAmount(envelope.id) - Amount;
-            if (id === envelope.id && AmountLeft >= 0) {
+            AmountLeft = this.currentAmountByCategory(envelope[category]) - Amount;
+            if (envelope[category] && AmountLeft >= 0) {
                 envelope.Amount -= Amount;
                 this._totalBudget -= Amount;
                 return true; 
@@ -39,7 +77,7 @@ class budgetManager{
         return false;
     }
 
-    currentAmount(id){
+    currentAmountById(id){
         const envelope = this._envelopes.find(envelope => envelope.id === id);
         
         if (envelope) {
@@ -47,6 +85,38 @@ class budgetManager{
         } else {
             console.error(`Envelope with ID '${id}' not found.`);
             return null; 
+        }
+    }
+
+    currentAmountByCategory(category){
+        const envelope = this._envelopes.find(envelope => envelope.category === category);
+        
+        if (envelope) {
+            return envelope.amount;
+        } else {
+            console.error(`Envelope with ID '${id}' not found.`);
+            return null; 
+        }
+    }
+
+    addAmountByCategory(category, amount){
+
+        for (const envelope of this._envelopes) {
+            if (envelope[category]) {
+                envelope.amount += amount;
+            }
+        }
+
+    }
+
+    removeAmountByCategory(category, amount){
+
+        let AmountLeft;
+        for (const envelope of this._envelopes) {
+            AmountLeft = this.currentAmountByCategory(category) - amount;
+            if (envelope[category] && AmountLeft >= 0) {
+                envelope.amount -= amount;
+            }
         }
     }
 }  
@@ -59,18 +129,20 @@ function randId(){
 }
 
 module.exports = {budgetManager};
+
+
 /*
 data recieved in api is going to look like this
 {
-    "totalBudget" : 40000,
+    "totalBudget" : 10000,
     "envelopes" : [
         {
             "category" : "health",
-            "Amount" : 300,
+            "amount" : 300
         },
         {
             "category" : "food",
-            "Amount" : 200,
+            "amount" : 200
         }
     ]
 }
