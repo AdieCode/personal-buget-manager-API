@@ -20,7 +20,6 @@ class budgetManager{
         return envelopes;
     }
 
-
     transfer(){
         return null
     }
@@ -30,8 +29,6 @@ class budgetManager{
         let AmountLeft;
         for (const envelope of this._envelopes) {
             AmountLeft = this.currentAmount(envelope.id) - Amount;
-            // console.log('id match = ' + id === envelope.id )
-            // console.log('amount = ' + AmountLeft )
             if (id === envelope.id && AmountLeft >= 0) {
                 envelope.Amount -= Amount;
                 this._totalBudget -= Amount;
@@ -49,26 +46,17 @@ class budgetManager{
             return envelope.Amount;
         } else {
             console.error(`Envelope with ID '${id}' not found.`);
-            return null; // or throw an error depending on your error handling strategy
+            return null; 
         }
     }
 }  
 
-
-// function generateEnvelopeIds(envelopes){
-//     envelopes.forEach(envelope => {
-//         envelope.id = randId();
-//     });
-
-//     return envelopes;
-// }
 
 function randId(){
     const radomNumber = Math.floor(Math.random() * 100) + 100;
 
     return radomNumber.toString();
 }
-
 
 module.exports = {budgetManager};
 /*
