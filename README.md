@@ -1,6 +1,9 @@
 # Personal Budget Manager API
 This API allows users to manage their personal budgets by creating envelopes for different expense categories and allocating budgets to each envelope. Users can perform various operations such as creating, updating, deleting envelopes, transferring funds between envelopes, and depleting budgets.
 
+# Contents
+ - [Endpoints](#API-Endpoints) 
+
 ## Getting Started
 To get started with the Personal Budget Manager API, follow the instructions below:
 
