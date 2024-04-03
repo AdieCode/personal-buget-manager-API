@@ -108,15 +108,3 @@ const port = process.env.PORT || 3000; // Use environment port or 3000 if not av
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-
-
-/* stuff needed
-  add more envelopes
-  ==================
-  - adding function --- done
-  - verrify data total amount of the envelopes don't exceed the totalBudget --- busy
-
-
-  update an envelopes amount
-  ==========================
-*/
